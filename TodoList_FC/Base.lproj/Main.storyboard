@@ -50,9 +50,20 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="ASA-co-RF2">
-                        <barButtonItem key="leftBarButtonItem" systemItem="edit" id="UcB-n4-78c"/>
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="MHi-yW-8gV"/>
+                        <barButtonItem key="leftBarButtonItem" systemItem="edit" id="UcB-n4-78c">
+                            <connections>
+                                <action selector="tapEditButton:" destination="BYZ-38-t0r" id="5wc-uY-3tu"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="MHi-yW-8gV">
+                            <connections>
+                                <action selector="tapAddButton:" destination="BYZ-38-t0r" id="JO4-0z-E5N"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="tableView" destination="lo9-fQ-a8o" id="6bO-xx-Edr"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
