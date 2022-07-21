@@ -37,12 +37,37 @@ class ViewController: UIViewController {
 		let cancelButton = UIAlertAction(title: "취소", style: .cancel, handler: nil)
 		alert.addAction(cancelButton)
 		alert.addAction(registerButton)
-		
+
 		// alert에 표시하는 textField 클로져
 		alert.addTextField(configurationHandler: { textField in
 			textField.placeholder = "할 일을 입력해주세요."
 		})
 		self.present(alert, animated: true, completion: nil)
+	}
+	
+	// UserDefault에 데이터 저장하기 (하나의 인스턴스만 존재)
+	func saveTasks() {
+		let data = self.tasks.map {
+			[
+				"title": $0.title,
+				"done": $0.done
+			]
+		}
+		let userDefaults = UserDefaults.standard
+		userDefaults.set(data, forKey: "tasks")
+	}
+	
+	// UserDefault저장된 데이터 불러오기
+	func loadTasks() {
+		let userDefaults = UserDefaults.standard
+		
+		// key값 선택하여 불러오기
+		guard let data = userDefaults.object(forKey: "tasks") as? [[String: Any]] else { return }
+		self.tasks = data.compactMap {
+			guard let title = $0["title"] as? String else { return nil }
+			guard let done = $0["done"] as? Bool else { return nil }
+			return Task(title: title, done: done)
+		}
 	}
 }
 
