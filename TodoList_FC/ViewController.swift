@@ -14,7 +14,7 @@ class ViewController: UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		// Do any additional setup after loading the view.
+		self.tableView.dataSource = self
 	}
 	
 	@IBAction func tapEditButton(_ sender: UIBarButtonItem) {
@@ -25,12 +25,14 @@ class ViewController: UIViewController {
 		
 		// weak self 미 사용시에 강한참조의 ARC로 메모리 누수발생
 		let registerButton = UIAlertAction(title: "등록", style: .default, handler: { [weak self] _ in
+			
+			// 입력한 텍스트 제목을 task 구조에 담아주기
 			guard let title = alert.textFields?[0].text else { return }
 			let task = Task(title: title, done: false)
 			
-			// alert창에 할일을 등록할때마다 tasks배열에 할일들이 추가가 됨
+			// task배열에 append해준이후 tableView reroad 해주기
 			self?.tasks.append(task)
-			
+			self?.tableView.reloadData()
 		})
 		let cancelButton = UIAlertAction(title: "취소", style: .cancel, handler: nil)
 		alert.addAction(cancelButton)
@@ -44,3 +46,21 @@ class ViewController: UIViewController {
 	}
 }
 
+extension ViewController: UITableViewDataSource {
+	// 행의 갯수
+	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+		return self.tasks.count
+	}
+	
+	// cell 그리는 함수
+	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+		
+		// withIdentifier을 사용하여 SB에서 이름을 찾아 삽입
+		// for 인자 해당 cell을 재사용하도록 도움
+		// cell자체를 재사용하여 메모리 누수방지를 위한 dequeueReusableCell을 활용
+		let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+		let task = self.tasks[indexPath.row]
+		cell.textLabel?.text = task.title
+		return cell
+	}
+}
