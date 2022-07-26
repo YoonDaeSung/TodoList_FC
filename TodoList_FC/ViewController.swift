@@ -9,7 +9,10 @@ import UIKit
 
 class ViewController: UIViewController {
 
+	// weak으로 선언하게 되면 Edit -> Done으로 변경시 메모리 헤제로인하여 재사용이 불가하게 됨
+	@IBOutlet var editButton: UIBarButtonItem!
 	@IBOutlet weak var tableView: UITableView!
+	var dondButton: UIBarButtonItem?
 	var tasks = [Task]() {
 		didSet {
 			self.saveTasks()
@@ -18,6 +21,11 @@ class ViewController: UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
+		self.dondButton = UIBarButtonItem(
+			barButtonSystemItem: .done,
+			target: self,
+			action: #selector(doneButtonTap)
+		)
 		self.tableView.dataSource = self
 		self.tableView.delegate = self
 		
@@ -25,7 +33,18 @@ class ViewController: UIViewController {
 		self.loadTasks()
 	}
 	
+	// swift에서 선언한 메소드를 object-c에서도 인식하도록 선언(@objc)
+	@objc func doneButtonTap(_ sender: UIBarButtonItem) {
+		self.navigationItem.leftBarButtonItem = self.editButton
+	}
+	
 	@IBAction func tapEditButton(_ sender: UIBarButtonItem) {
+		// ! not 연산을 붙여줌으로써 isEmpty는 비어있으면이 아닌 비어있지 않으면이란 조건이됨
+		// tasks가 비어있지 않을 때 편집모드 전환되도록 방어코드 작성
+		guard !self.tasks.isEmpty else { return }
+		
+		// tableView가 편집모드로 전환되도록 설정
+		self.tableView.setEditing(true, animated: true)
 	}
 	
 	@IBAction func tapAddButton(_ sender: UIBarButtonItem) {
