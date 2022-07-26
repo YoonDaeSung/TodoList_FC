@@ -10,11 +10,19 @@ import UIKit
 class ViewController: UIViewController {
 
 	@IBOutlet weak var tableView: UITableView!
-	var tasks = [Task]()
+	var tasks = [Task]() {
+		didSet {
+			self.saveTasks()
+		}
+	}
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		self.tableView.dataSource = self
+		self.tableView.delegate = self
+		
+		// didLoad를 통하여 저장된 할일들을 불러온다.
+		self.loadTasks()
 	}
 	
 	@IBAction func tapEditButton(_ sender: UIBarButtonItem) {
@@ -45,7 +53,7 @@ class ViewController: UIViewController {
 		self.present(alert, animated: true, completion: nil)
 	}
 	
-	// UserDefault에 데이터 저장하기 (하나의 인스턴스만 존재)
+	// UserDefault에 데이터 저장하기 (싱글톤인 사유로 하나의 인스턴스만 존재)
 	func saveTasks() {
 		let data = self.tasks.map {
 			[
@@ -86,6 +94,26 @@ extension ViewController: UITableViewDataSource {
 		let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
 		let task = self.tasks[indexPath.row]
 		cell.textLabel?.text = task.title
+		
+		// task.done 이 true이면 checkmark 아니면 없는 상태
+		if task.done {
+			cell.accessoryType = .checkmark
+		} else {
+			cell.accessoryType = .none
+		}
 		return cell
+	}
+}
+
+extension ViewController: UITableViewDelegate {
+	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		
+		// 몇 번째 task에 접근하는지 확인하기
+		var task = self.tasks[indexPath.row]
+		task.done = !task.done
+		self.tasks[indexPath.row] = task
+		
+		// 선택된 cell만 reroad하도록 선언 (좌측 우측 등으로 자동으로 애니메이션 선택)
+		self.tableView.reloadRows(at: [indexPath], with: .automatic)
 	}
 }
