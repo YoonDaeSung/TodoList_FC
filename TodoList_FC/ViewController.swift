@@ -34,8 +34,12 @@ class ViewController: UIViewController {
 	}
 	
 	// swift에서 선언한 메소드를 object-c에서도 인식하도록 선언(@objc)
-	@objc func doneButtonTap(_ sender: UIBarButtonItem) {
+	@objc func doneButtonTap() {
+		// done 클릭시 다시 edit버튼으로 전환
 		self.navigationItem.leftBarButtonItem = self.editButton
+		
+		// tableView 편집기능 끝나도록 설정
+		self.tableView.setEditing(false, animated: true)
 	}
 	
 	@IBAction func tapEditButton(_ sender: UIBarButtonItem) {
@@ -43,8 +47,12 @@ class ViewController: UIViewController {
 		// tasks가 비어있지 않을 때 편집모드 전환되도록 방어코드 작성
 		guard !self.tasks.isEmpty else { return }
 		
+		// edit클릭시 done으로 전환
+		self.navigationItem.leftBarButtonItem = self.dondButton
+		
 		// tableView가 편집모드로 전환되도록 설정
 		self.tableView.setEditing(true, animated: true)
+		
 	}
 	
 	@IBAction func tapAddButton(_ sender: UIBarButtonItem) {
@@ -121,6 +129,39 @@ extension ViewController: UITableViewDataSource {
 			cell.accessoryType = .none
 		}
 		return cell
+	}
+	
+	// 편집모드에서 삭제버튼 클릭시 선택된 cell이 어떤cell인지 알려줌
+	func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+		
+		// task내에서 삭제
+		self.tasks.remove(at: indexPath.row)
+		
+		// tableView내에서 삭제
+		// 편집모드에 들어가지않아도 swipe delete로 삭제가능
+		self.tableView.deleteRows(at: [indexPath], with: .automatic)
+		
+		// 모든셀이 삭제되면 doneButton 호출하여 편집모드 탈출
+		if self.tasks.isEmpty {
+			self.doneButtonTap()
+		}
+	}
+	
+	// edit모드에서 행의 위치를 변경 가능
+	func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+		return true
+	}
+	
+	// 행의 위치변경시 어디에서 어디로 가는지 알려주는 함수
+	func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+		
+		// task(할일 저장하는 메소드)배열에서도 동일하게 재정렬되도록 구현
+		// 앱을 껏다켜도 변경된 tasks를 읽어서 변경된 tableView를 보여줌
+		var tasks = self.tasks
+		let task = tasks[sourceIndexPath.row] // 기존 위치의 task
+		tasks.remove(at: sourceIndexPath.row) // tasks배열에서 기존 작업 삭제
+		tasks.insert(task, at: destinationIndexPath.row) // 기존 task를 변경된 행위치에 해당되는 배열에 insert
+		self.tasks = tasks // 정렬된 tasks를 self tasks에 대입
 	}
 }
 

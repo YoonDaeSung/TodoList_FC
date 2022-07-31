@@ -52,7 +52,7 @@
                     <navigationItem key="navigationItem" id="ASA-co-RF2">
                         <barButtonItem key="leftBarButtonItem" systemItem="edit" id="UcB-n4-78c">
                             <connections>
-                                <action selector="tapEditButton:" destination="BYZ-38-t0r" id="5wc-uY-3tu"/>
+                                <action selector="tapEditButton:" destination="BYZ-38-t0r" id="Jlg-t5-cvT"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="MHi-yW-8gV">
