@@ -12,16 +12,27 @@ class ViewController: UIViewController {
 	// weak으로 선언하게 되면 Edit -> Done으로 변경시 메모리 헤제로인하여 재사용이 불가하게 됨
 	@IBOutlet var editButton: UIBarButtonItem!
 	@IBOutlet weak var tableView: UITableView!
-	var dondButton: UIBarButtonItem?
+	var doneButton: UIBarButtonItem?
 	var tasks = [Task]() {
 		didSet {
 			self.saveTasks()
 		}
 	}
 	
+	private lazy var stackView: UIStackView = {
+		var stackView = UIStackView()
+		return stackView
+	}()
+
+	private lazy var view1: UIView = {
+		var view = UIView()
+		view.setContentCompressionResistancePriority(.required, for: .horizontal)
+		return view
+	}()
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		self.dondButton = UIBarButtonItem(
+		self.doneButton = UIBarButtonItem(
 			barButtonSystemItem: .done,
 			target: self,
 			action: #selector(doneButtonTap)
@@ -48,7 +59,7 @@ class ViewController: UIViewController {
 		guard !self.tasks.isEmpty else { return }
 		
 		// edit클릭시 done으로 전환
-		self.navigationItem.leftBarButtonItem = self.dondButton
+		self.navigationItem.leftBarButtonItem = self.doneButton
 		
 		// tableView가 편집모드로 전환되도록 설정
 		self.tableView.setEditing(true, animated: true)
